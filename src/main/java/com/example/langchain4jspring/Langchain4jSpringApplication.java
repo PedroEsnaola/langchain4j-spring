@@ -1,6 +1,8 @@
 package com.example.langchain4jspring;
 
 import com.example.langchain4jspring.domain.ai.service.UserAssistantService;
+import com.example.langchain4jspring.domain.application.model.User;
+import com.example.langchain4jspring.domain.application.service.UserService;
 import jakarta.annotation.PostConstruct;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class Langchain4jSpringApplication {
     @Autowired
     UserAssistantService userAssistantService;
 
+    @Autowired
+    private UserService userService;
+
     public static void main(String[] args) {
         SpringApplication.run(Langchain4jSpringApplication.class, args);
     }
@@ -27,6 +32,7 @@ public class Langchain4jSpringApplication {
 
     @PostConstruct
     public void init(){
+        userService.createUser(new User(null, "Pedro", "um email", null));
         Scanner scanner = new Scanner(System.in);
         Set<String> set = Set.of("exit", "quit");
         System.out.println("\n\nPlease enter your question: ");

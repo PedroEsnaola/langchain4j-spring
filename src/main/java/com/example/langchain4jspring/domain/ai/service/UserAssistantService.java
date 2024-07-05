@@ -8,7 +8,8 @@ import dev.langchain4j.service.spring.AiService;
 
 @AiService(
         chatMemoryProvider = "mongoChatMemoryProvider",
-        chatModel = "vertexAiGeminiChatModel"
+        chatModel = "vertexAiGeminiChatModel",
+        tools = "userTools"
 )
 public interface UserAssistantService {
 

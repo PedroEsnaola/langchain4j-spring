@@ -1,6 +1,7 @@
 package com.example.langchain4jspring.domain.ai.model;
 
 
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
 import dev.langchain4j.data.message.*;
 import dev.langchain4j.memory.ChatMemory;
 import lombok.AllArgsConstructor;
@@ -50,15 +51,34 @@ public class MongoChatMemory{
         private String text;
 
         public static Message from(ChatMessage message) {
-            return new Message(message.type(), message.text());
+            switch (message.type()){
+                case AI:
+                    var aiMessage = (dev.langchain4j.data.message.AiMessage) message;
+                    return new AiMessage(aiMessage.type(), aiMessage.text(), aiMessage.toolExecutionRequests());
+                default:
+                    return new Message(message.type(), message.text());
+            }
         }
 
         public ChatMessage toChatMessage(){
             return switch (this.type){
-                case AI -> new AiMessage(this.text);
                 case SYSTEM -> new SystemMessage(this.text);
                 default -> new UserMessage(this.text);
             };
+        }
+    }
+
+    public static class AiMessage extends Message{
+        private List<ToolExecutionRequest> toolExecutionRequests;
+
+        @Override
+        public ChatMessage toChatMessage() {
+            return new dev.langchain4j.data.message.AiMessage(super.getText(), this.toolExecutionRequests);
+        }
+
+        public AiMessage(ChatMessageType type, String text, List<ToolExecutionRequest> toolExecutionRequests) {
+            super(type, text);
+            this.toolExecutionRequests = toolExecutionRequests;
         }
     }
 
